@@ -14,9 +14,6 @@ let package = Package(
             type: .static,
             targets: ["WrapKitRealm"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/realm/realm-cocoa", from: "10.14.0")
-    ],
     targets: [
         .target(
             name: "WrapKit",
@@ -27,8 +24,6 @@ let package = Package(
             name: "WrapKitRealm",
             dependencies: [
                 "WrapKit",
-                .product(name: "Realm", package: "realm-cocoa"),
-                .product(name: "RealmSwift", package: "realm-cocoa"),
             ],
             path: "WrapKitRealm/Sources"
         ),
