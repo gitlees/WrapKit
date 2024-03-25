@@ -40,15 +40,8 @@ open class Button: UIButton {
     
     public override var isHighlighted: Bool {
         didSet {
-            if isHighlighted {
-                UIView.animate(withDuration: 0.3, delay: .leastNonzeroMagnitude, options: .allowUserInteraction) {
-                    self.alpha = 0.7
-                }
-                onPress?()
-            } else {
-                UIView.animate(withDuration: 0.3, delay: .leastNonzeroMagnitude, options: .allowUserInteraction) {
-                    self.alpha = 1.0
-                }
+            UIView.animate(withDuration: 0.3, delay: .leastNonzeroMagnitude, options: .allowUserInteraction) {
+                self.alpha = self.isHighlighted ? 0.7 : 1.0
             }
         }
     }
@@ -81,7 +74,11 @@ open class Button: UIButton {
         self.contentEdgeInsets = .init(top: contentInset.top, left: contentInset.left, bottom: contentInset.bottom, right: contentInset.right + spacing)
         self.titleEdgeInsets = .init(top: 0, left: spacing, bottom: 0, right: titleEdgeInsets.right)
         self.isHidden = isHidden
-        
+        self.addTarget(self, action: #selector(didTouchUpInside), for: .touchUpInside)
+    }
+
+    @objc private func didTouchUpInside() {
+        onPress?()
     }
 }
 #endif

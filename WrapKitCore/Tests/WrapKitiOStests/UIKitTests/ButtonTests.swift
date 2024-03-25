@@ -10,42 +10,30 @@ import WrapKit
 import UIKit
 
 class ButtonTests: XCTestCase {
-    
-    func test_button_press() {
-        let buttonExpactation = expectation(description: "onPress closure triggered")
-        let sut = makeSUT()
-        sut.onPress = {
-            buttonExpactation.fulfill()
-        }
-        
+    func test_onPressClosureTriggeredOnButtonPress() {
         DispatchQueue.main.async {
-            sut.sendActions(for: .touchUpInside)
-        }
-        
-        waitForExpectations(timeout: 1) { error in
-            if let error = error {
-                XCTFail("Button onPress closure was not triggered: \(error)")
+            let onPressExpectation = self.expectation(description: "onPress closure was not triggered")
+            let button = self.makeSUT()
+            
+            button.onPress = {
+                onPressExpectation.fulfill()
             }
+            
+            button.sendActions(for: .touchUpInside)
+            self.wait(for: [onPressExpectation], timeout: 0.1)
+            
+            let onPressExpectation2 = self.expectation(description: "onPress closure was not triggered")
+            button.sendActions(for: .touchUpInside)
+            button.onPress = {
+                onPressExpectation2.fulfill()
+            }
+            
+            self.wait(for: [onPressExpectation2], timeout: 0.1)
         }
     }
     
-    func test_button_press_directCall() {
-        let sut = makeSUT()
-        var onPressCalled = false
-
-        sut.onPress = {
-            onPressCalled = true
-        }
-
-        DispatchQueue.main.async {
-            sut.sendActions(for: .touchUpInside)
-        }
-
-        XCTAssertTrue(onPressCalled, "Button onPress closure was not called")
-    }
-    
-    func makeSUT() -> Button {
-        let sut = Button()
-        return sut
+    private func makeSUT() -> Button {
+        let button = Button()
+        return button
     }
 }
