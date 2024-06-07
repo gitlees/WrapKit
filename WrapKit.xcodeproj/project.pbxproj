@@ -127,6 +127,8 @@
 		C419498A2BF74C7B002FFFAD /* Int+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41949892BF74C7B002FFFAD /* Int+Extensions.swift */; };
 		C4213CB62BFA270100B6630D /* Hashable+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4213CB52BFA270100B6630D /* Hashable+extensions.swift */; };
 		C43847C02BA2B25700E3D8EA /* WrapKitRealm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C43847B82BA2B25700E3D8EA /* WrapKitRealm.framework */; };
+		C43847C52BA2B25700E3D8EA /* WrapKitRealmTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43847C42BA2B25700E3D8EA /* WrapKitRealmTests.swift */; };
+		C43847CE2BA2B26E00E3D8EA /* RealmStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43847CD2BA2B26E00E3D8EA /* RealmStorage.swift */; };
 		C43847D02BA2B29500E3D8EA /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = C43847CF2BA2B29500E3D8EA /* Realm */; };
 		C43847D22BA2B29500E3D8EA /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C43847D12BA2B29500E3D8EA /* RealmSwift */; };
 		C46158542BFA8D7F00B817B2 /* DiffableCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46158532BFA8D7F00B817B2 /* DiffableCollectionViewDataSource.swift */; };
@@ -178,7 +180,6 @@
 		C4BBD6632BF47EB3009B654D /* PickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BBD6622BF47EB3009B654D /* PickerView.swift */; };
 		C4BBD6652BF47EF8009B654D /* DatePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BBD6642BF47EF8009B654D /* DatePickerView.swift */; };
 		C4E3BD602BBEC389001F2F8C /* UserDefaultsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E3BD5F2BBEC389001F2F8C /* UserDefaultsStorageTests.swift */; };
-		C4E6A37E2C12EF7000071218 /* RealmStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43847CD2BA2B26E00E3D8EA /* RealmStorage.swift */; };
 		C4EE13B12C045FC500AE915D /* CommonToastOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EE13B02C045FC500AE915D /* CommonToastOutput.swift */; };
 		C4EE13B32C045FEE00AE915D /* CommonToastiOSAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EE13B22C045FEE00AE915D /* CommonToastiOSAdapter.swift */; };
 /* End PBXBuildFile section */
@@ -324,6 +325,7 @@
 		C4213CB52BFA270100B6630D /* Hashable+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Hashable+extensions.swift"; sourceTree = "<group>"; };
 		C43847B82BA2B25700E3D8EA /* WrapKitRealm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WrapKitRealm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C43847BF2BA2B25700E3D8EA /* WrapKitRealmTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WrapKitRealmTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C43847C42BA2B25700E3D8EA /* WrapKitRealmTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrapKitRealmTests.swift; sourceTree = "<group>"; };
 		C43847CD2BA2B26E00E3D8EA /* RealmStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmStorage.swift; sourceTree = "<group>"; };
 		C46158532BFA8D7F00B817B2 /* DiffableCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffableCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		C46158552BFA8DE900B817B2 /* DIffableTableViewDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIffableTableViewDatasource.swift; sourceTree = "<group>"; };
@@ -463,7 +465,6 @@
 		53F9F9F02AB6C15500110054 /* Storage */ = {
 			isa = PBXGroup;
 			children = (
-				C43847CD2BA2B26E00E3D8EA /* RealmStorage.swift */,
 				C051606B2A6FADB500E01640 /* KeychainStorage.swift */,
 				537540712B2C0E3300C41CF7 /* UserDefaultsStorage.swift */,
 				53F9F9EB2AB6B76E00110054 /* InMemoryStorage.swift */,
@@ -620,6 +621,7 @@
 			children = (
 				C0A8E9132A7D863E0006FCE4 /* WrapKit.xctestplan */,
 				C43847B22BA2B04300E3D8EA /* WrapKitCore */,
+				C43847B92BA2B25700E3D8EA /* WrapKitRealm */,
 				C056E6D32A6D04A70020AB69 /* Products */,
 				C0B61AC42A753876002C0F38 /* Frameworks */,
 			);
@@ -955,6 +957,31 @@
 				C07DFF2F2A8B174700466533 /* Sources */,
 			);
 			path = WrapKitCore;
+			sourceTree = "<group>";
+		};
+		C43847B92BA2B25700E3D8EA /* WrapKitRealm */ = {
+			isa = PBXGroup;
+			children = (
+				C43847D42BA2B37500E3D8EA /* Tests */,
+				C43847D32BA2B37000E3D8EA /* Sources */,
+			);
+			path = WrapKitRealm;
+			sourceTree = "<group>";
+		};
+		C43847D32BA2B37000E3D8EA /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				C43847CD2BA2B26E00E3D8EA /* RealmStorage.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		C43847D42BA2B37500E3D8EA /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				C43847C42BA2B25700E3D8EA /* WrapKitRealmTests.swift */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		C46158522BFA8D7100B817B2 /* Classes */ = {
@@ -1325,7 +1352,6 @@
 				C4A4373F2BFF36B100A30089 /* NVActivityIndicatorAnimationBallScale.swift in Sources */,
 				53F9F9EC2AB6B76E00110054 /* InMemoryStorage.swift in Sources */,
 				C0BE6EA92A9B9FD500864F53 /* CharacterSet+Extensions.swift in Sources */,
-				C4E6A37E2C12EF7000071218 /* RealmStorage.swift in Sources */,
 				C4A437422BFF36B100A30089 /* NVActivityIndicatorAnimationSemiCircleSpin.swift in Sources */,
 				C0B61ADB2A753F10002C0F38 /* KeychainStorage.swift in Sources */,
 				53D395F12B272F150016F698 /* StoredHTTPClientDecorator.swift in Sources */,
@@ -1443,6 +1469,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C43847CE2BA2B26E00E3D8EA /* RealmStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1450,6 +1477,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C43847C52BA2B25700E3D8EA /* WrapKitRealmTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1807,6 +1835,7 @@
 		C43847CB2BA2B25700E3D8EA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1832,6 +1861,7 @@
 		C43847CC2BA2B25700E3D8EA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
