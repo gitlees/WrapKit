@@ -10,12 +10,20 @@ import Foundation
 import RealmSwift
 import WrapKit
 
-public protocol ObjectDTO<Object> where Object == RealmSwift.Object {
+public protocol ObjectDTO<Object>: Hashable where Object == RealmSwift.Object {
     associatedtype Object
     var object: Object { get }
 }
 
-public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: ObjectDTO>: Storage where Model == Object.ViewModel {
+public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: ObjectDTO>: Storage, Hashable where Model == Object.ViewModel {
+    public static func == (lhs: RealmStorage, rhs: RealmStorage) -> Bool {
+        return lhs.model == rhs.model
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(model)
+    }
+    
     private let realmQueue = DispatchQueue(label: "com.wrapkit.storage.realmQueue")
     private var observers = [ObserverWrapper]()
     

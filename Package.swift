@@ -10,6 +10,10 @@ let package = Package(
             type: .static,
             targets: ["WrapKit"]),
         .library(
+            name: "WrapKitRealm",
+            type: .static,
+            targets: ["WrapKitRealm"]),
+        .library(
             name: "WrapKitDynamic",
             type: .dynamic,
             targets: ["WrapKit"])
@@ -18,11 +22,15 @@ let package = Package(
     targets: [
         .target(
             name: "WrapKit",
+            path: "WrapKitCore/Sources"
+        ),
+        .target(
+            name: "WrapKitRealm",
             dependencies: [
                 .product(name: "Realm", package: "realm-swift"),
                 .product(name: "RealmSwift", package: "realm-swift")
             ],
-            path: "WrapKitCore/Sources"
+            path: "WrapKitRealm/Sources"
         ),
         .testTarget(
             name: "WrapKitTests",
