@@ -10,8 +10,8 @@ import UIKit
 
 open class Textfield: UITextField {
     public enum TrailingViewStyle {
-        case clear(trailingView: ImageView)
-        case custom(trailingView: UIView)
+        case clear(trailingView: View)
+        case custom(trailingView: View)
     }
     
     public struct Placeholder {
@@ -67,13 +67,13 @@ open class Textfield: UITextField {
         public var border: Border?
     }
     
-    public var leadingView: UIView? {
+    public var leadingView: View? {
         didSet {
             oldValue?.removeFromSuperview()
             setupLeadingView()
         }
     }
-    public var trailingView: UIView? {
+    public var trailingView: View? {
         didSet {
             oldValue?.removeFromSuperview()
             setupTrailingView()
@@ -84,7 +84,13 @@ open class Textfield: UITextField {
     public var clearButtonEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 8)
     
     public var isTextSelectionDisabled = false
-    public var isEditable = true
+    public var isEditable = true {
+        didSet {
+            if !isEditable {
+                _  = resignFirstResponder()
+            }
+        }
+    }
     
     public var onPress: (() -> Void)?
     public var validationRule: ((String?) -> Bool)?
@@ -93,13 +99,11 @@ open class Textfield: UITextField {
     public var onResignFirstResponder: (() -> Void)?
     
     public var didChangeText = [((String?) -> Void)]()
-    private var debounceTimer: Timer?
-    private let debounceInterval: TimeInterval = 0.2
     
     @discardableResult
     public func validate() -> Bool {
         let text = (delegate as? MaskedTextfieldDelegate)?.fullText ?? text
-        updateAppearence()
+        updateAppearance()
         return validationRule?(text) ?? true
     }
     
@@ -123,17 +127,17 @@ open class Textfield: UITextField {
         }
     }
     
-    public var appearence: Appearance { didSet { updateAppearence() }}
+    public var appearance: Appearance { didSet { updateAppearance() }}
     public var customizedPlaceholder: Placeholder? { didSet { updatePlaceholder() }}
     
     public init(
         cornerRadius: CGFloat = 10,
         textAlignment: NSTextAlignment = .natural,
-        appearence: Appearance,
+        appearance: Appearance,
         placeholder: Placeholder?,
         padding: UIEdgeInsets = .init(top: 10, left: 12, bottom: 10, right: 12),
         nextTextfield: UIResponder? = nil,
-        leadingView: UIView? = nil,
+        leadingView: View? = nil,
         trailingView: TrailingViewStyle? = nil,
         inputView: UIView? = nil,
         autocapitalizationType: UITextAutocapitalizationType = .none,
@@ -141,32 +145,33 @@ open class Textfield: UITextField {
     ) {
         self.padding = padding
         self.nextTextfield = nextTextfield
-        self.appearence = appearence
+        self.appearance = appearance
         self.customizedPlaceholder = placeholder
         super.init(frame: .zero)
 
         self.textAlignment = textAlignment
         self.cornerRadius = cornerRadius
         self.autocorrectionType = .no
-        self.textColor = appearence.colors.textColor
+        self.textColor = appearance.colors.textColor
         self.autocapitalizationType = .none
         self.inputView = inputView
         maskedTextfieldDelegate = delegate
         delegate?.applyTo(textfield: self)
         returnKeyType = nextTextfield == nil ? .done : .next
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTextfield))
-        self.textInputView.addGestureRecognizer(tapGesture)
         addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
         self.leadingView = leadingView
         didChangeText.append { [weak self] _ in self?.validate() }
-        updateAppearence()
+        updateAppearance()
         
         switch trailingView {
         case .custom(let trailingView):
             self.trailingView = trailingView
         case .clear(let trailingView):
-            trailingView.onPress = { [weak self] in self?.text = "" }
+            trailingView.onPress = { [weak self] in
+                self?.text = ""
+                trailingView.isHidden = true
+            }
             self.didChangeText.append { [weak self] text in
                 let text = self?.maskedTextfieldDelegate?.onlySpecifiersIfMaskedText ?? text ?? ""
                 self?.trailingView?.isHidden = text.isEmpty
@@ -180,6 +185,18 @@ open class Textfield: UITextField {
         setupTrailingView()
     }
     
+    override open func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+         if let trailingView = trailingView, trailingView.frame.contains(point) {
+             trailingView.onPress?()
+             return true
+         } else if let leadingView = leadingView, leadingView.frame.contains(point) {
+             leadingView.onPress?()
+             return true
+         }
+        onPress?()
+         return super.point(inside: point, with: event)
+     }
+    
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -189,17 +206,13 @@ open class Textfield: UITextField {
     }
     
     @objc private func textFieldDidChange() {
-        debounceTimer?.invalidate()
-        debounceTimer = Timer.scheduledTimer(withTimeInterval: debounceInterval, repeats: false, block: { [weak self] _ in
-            guard let self = self else { return }
-            self.didChangeText.forEach {
-                if let delegate = self.delegate as? MaskedTextfieldDelegate {
-                    $0(delegate.fullText)
-                } else {
-                    $0(self.text)
-                }
+        didChangeText.forEach {
+            if let delegate = self.delegate as? MaskedTextfieldDelegate {
+                $0(delegate.fullText)
+            } else {
+                $0(self.text)
             }
-        })
+        }
     }
     
     private func updatePlaceholder() {
@@ -227,20 +240,25 @@ open class Textfield: UITextField {
     
     @discardableResult
     override open func becomeFirstResponder() -> Bool {
+        guard isEditable else { return false }
         let success = super.becomeFirstResponder()
         if success { onBecomeFirstResponder?() }
         if isSecureTextEntry, let text = self.text {
             self.text?.removeAll()
             insertText(text)
         }
-        updateAppearence()
+        updateAppearance()
         return success
     }
+    
+    override open var canBecomeFirstResponder: Bool {
+         return isEditable
+     }
     
     open override func resignFirstResponder() -> Bool {
         let result = super.resignFirstResponder()
         if result { onResignFirstResponder?() }
-        updateAppearence()
+        updateAppearance()
         return result
     }
     
@@ -313,42 +331,42 @@ open class Textfield: UITextField {
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        updateAppearence()
+        updateAppearance()
     }
 }
 
 public extension Textfield {
-    func updateAppearence(isValid: Bool) {
-        font = appearence.font
+    func updateAppearance(isValid: Bool) {
+        font = appearance.font
         let isFirstResponder = isFirstResponder
-        let appearence = appearence
+        let appearance = appearance
         UIView.animate(withDuration: 0.1, delay: .leastNonzeroMagnitude, options: [.allowUserInteraction]) {
             if isValid {
-                self.backgroundColor = isFirstResponder ? appearence.colors.selectedBackgroundColor : appearence.colors.deselectedBackgroundColor
-                self.layer.borderColor = isFirstResponder ? appearence.colors.selectedBorderColor.cgColor : appearence.colors.deselectedBorderColor.cgColor
+                self.backgroundColor = isFirstResponder ? appearance.colors.selectedBackgroundColor : appearance.colors.deselectedBackgroundColor
+                self.layer.borderColor = isFirstResponder ? appearance.colors.selectedBorderColor.cgColor : appearance.colors.deselectedBorderColor.cgColor
             } else {
-                self.backgroundColor = appearence.colors.errorBackgroundColor
-                self.layer.borderColor = appearence.colors.errorBorderColor.cgColor
+                self.backgroundColor = appearance.colors.errorBackgroundColor
+                self.layer.borderColor = appearance.colors.errorBorderColor.cgColor
             }
-            self.layer.borderWidth = (isFirstResponder ? appearence.border?.selectedBorderWidth : appearence.border?.idleBorderWidth) ?? 0
+            self.layer.borderWidth = (isFirstResponder ? appearance.border?.selectedBorderWidth : appearance.border?.idleBorderWidth) ?? 0
         }
     }
     
-    private func updateAppearence() {
-        font = appearence.font
+    private func updateAppearance() {
+        font = appearance.font
         let text = (delegate as? MaskedTextfieldDelegate)?.fullText ?? text
         let isValid = validationRule?(text) ?? true
         let isFirstResponder = isFirstResponder
-        let appearence = appearence
+        let appearance = appearance
         UIView.animate(withDuration: 0.1, delay: .leastNonzeroMagnitude, options: [.allowUserInteraction]) {
             if isValid {
-                self.backgroundColor = isFirstResponder ? appearence.colors.selectedBackgroundColor : appearence.colors.deselectedBackgroundColor
-                self.layer.borderColor = isFirstResponder ? appearence.colors.selectedBorderColor.cgColor : appearence.colors.deselectedBorderColor.cgColor
+                self.backgroundColor = isFirstResponder ? appearance.colors.selectedBackgroundColor : appearance.colors.deselectedBackgroundColor
+                self.layer.borderColor = isFirstResponder ? appearance.colors.selectedBorderColor.cgColor : appearance.colors.deselectedBorderColor.cgColor
             } else {
-                self.backgroundColor = appearence.colors.errorBackgroundColor
-                self.layer.borderColor = appearence.colors.errorBorderColor.cgColor
+                self.backgroundColor = appearance.colors.errorBackgroundColor
+                self.layer.borderColor = appearance.colors.errorBorderColor.cgColor
             }
-            self.layer.borderWidth = (isFirstResponder ? appearence.border?.selectedBorderWidth : appearence.border?.idleBorderWidth) ?? 0
+            self.layer.borderWidth = (isFirstResponder ? appearance.border?.selectedBorderWidth : appearance.border?.idleBorderWidth) ?? 0
         }
     }
 }
