@@ -26,7 +26,6 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
     
     private let realmQueue = DispatchQueue(label: "com.wrapkit.storage.realmQueue")
     private var observers = [ObserverWrapper]()
-    private let realm: Realm
     
     private var model: Model? {
         didSet {
@@ -34,12 +33,42 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
         }
     }
     
-    public init(realm: Realm) {
-        self.realm = realm
+    public init(schemaVersion: UInt64) {
+        let config = Realm.Configuration(
+            schemaVersion: schemaVersion,
+            migrationBlock: { migration, oldSchemaVersion in
+                if oldSchemaVersion < schemaVersion {
+                    let realmURL = Realm.Configuration.defaultConfiguration.fileURL!
+                    let realmURLs = [
+                        realmURL,
+                        realmURL.appendingPathExtension("lock"),
+                        realmURL.appendingPathExtension("note"),
+                        realmURL.appendingPathExtension("management")
+                    ]
+                    
+                    for url in realmURLs {
+                        do {
+                            try FileManager.default.removeItem(at: url)
+                        } catch {
+                            print("Error deleting Realm file at \(url): \(error)")
+                        }
+                    }
+                }
+            })
+
+        // Tell Realm to use this new configuration object for the default Realm
+        Realm.Configuration.defaultConfiguration = config
+        
+        // Now that we’ve told Realm how to handle the schema change, opening the file will automatically perform the migration
         realmQueue.async {
-            let result = realm.objects(Object.self).first?.viewModel
-            DispatchQueue.main.async {
-                self.model = result
+            do {
+                let realm = try Realm()
+                let result = realm.objects(Object.self).first?.viewModel
+                DispatchQueue.main.async {
+                    self.model = result
+                }
+            } catch {
+                print("Error initializing Realm: \(error)")
             }
         }
     }
@@ -57,11 +86,13 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
     public func set(model: Model?, completion: ((Bool) -> Void)?) {
         realmQueue.async {
             do {
-                try self.realm.write {
+                let realm = try Realm()
+
+                try realm.write {
                     if let model = model {
-                        self.realm.add(model.object, update: .modified)
+                        realm.add(model.object, update: .modified)
                     } else {
-                        self.realm.delete(self.realm.objects(Object.self))
+                        realm.delete(realm.objects(Object.self))
                     }
                     DispatchQueue.main.async {
                         self.model = model
@@ -80,8 +111,9 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
     public func clear(completion: ((Bool) -> Void)?) {
         realmQueue.async {
             do {
-                try self.realm.write {
-                    self.realm.delete(self.realm.objects(Object.self))
+                let realm = try Realm()
+                try realm.write {
+                    realm.delete(realm.objects(Object.self))
                     
                     DispatchQueue.main.async {
                         self.model = nil
@@ -114,5 +146,4 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
         }
     }
 }
-
 #endif
