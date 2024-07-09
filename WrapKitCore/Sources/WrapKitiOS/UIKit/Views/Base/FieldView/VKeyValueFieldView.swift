@@ -133,6 +133,8 @@ open class VKeyValueFieldView: UIView {
         textColor: .black,
         numberOfLines: 1
     )
+    var keyShimmerView = ShimmerView()
+
     public lazy var valueLabel = Label(
         font: .systemFont(ofSize: 14),
         textColor: .black,
@@ -140,6 +142,8 @@ open class VKeyValueFieldView: UIView {
         minimumScaleFactor: 0.5,
         adjustsFontSizeToFitWidth: true
     )
+    
+    var valueShimmerView = ShimmerView()
 
     public init(
         keyLabel: Label = Label(
@@ -164,6 +168,8 @@ open class VKeyValueFieldView: UIView {
         self.keyLabel = keyLabel
         self.valueLabel = valueLabel
         self.isHidden = isHidden
+        keyShimmerView.isHidden = true
+        valueShimmerView.isHidden = true
 
         setupSubviews()
         setupConstraints()
@@ -179,6 +185,21 @@ open class VKeyValueFieldView: UIView {
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    public func runShimmer(showKeyShimmer: Bool, showValueShimmer: Bool) {
+        keyShimmerView.isHidden = !showKeyShimmer
+        valueShimmerView.isHidden = !showValueShimmer
+        keyShimmerView.startShimmering()
+        valueShimmerView.startShimmering()
+    }
+    
+    public func stopShimmer() {
+        keyShimmerView.isHidden = true
+        valueShimmerView.isHidden = true
+        
+        keyLabel.isHidden = false
+        valueLabel.isHidden = false
+    }
 }
 
 extension VKeyValueFieldView {
@@ -186,6 +207,8 @@ extension VKeyValueFieldView {
         addSubview(stackView)
         stackView.addArrangedSubview(keyLabel)
         stackView.addArrangedSubview(valueLabel)
+        stackView.addArrangedSubview(keyShimmerView)
+        stackView.addArrangedSubview(valueShimmerView)
     }
 
     func setupConstraints() {
@@ -194,6 +217,15 @@ extension VKeyValueFieldView {
             .bottom(bottomAnchor),
             .leading(leadingAnchor),
             .trailing(trailingAnchor)
+        )
+        
+        keyShimmerView.anchor(
+            .height(8),
+            .width(168)
+        )
+        valueShimmerView.anchor(
+            .height(8),
+            .width(88)
         )
     }
 }

@@ -26,6 +26,7 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
     
     private let realmQueue = DispatchQueue(label: "com.wrapkit.storage.realmQueue")
     private var observers = [ObserverWrapper]()
+    private let realm: Realm
     
     private var model: Model? {
         didSet {
@@ -33,9 +34,9 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
         }
     }
     
-    public init() {
+    public init(realm: Realm) {
+        self.realm = realm
         realmQueue.async {
-            let realm = try! Realm()
             let result = realm.objects(Object.self).first?.viewModel
             DispatchQueue.main.async {
                 self.model = result
@@ -56,12 +57,11 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
     public func set(model: Model?, completion: ((Bool) -> Void)?) {
         realmQueue.async {
             do {
-                let realm = try Realm()
-                try realm.write {
+                try self.realm.write {
                     if let model = model {
-                        realm.add(model.object, update: .modified)
+                        self.realm.add(model.object, update: .modified)
                     } else {
-                        realm.delete(realm.objects(Object.self))
+                        self.realm.delete(self.realm.objects(Object.self))
                     }
                     DispatchQueue.main.async {
                         self.model = model
@@ -80,9 +80,8 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
     public func clear(completion: ((Bool) -> Void)?) {
         realmQueue.async {
             do {
-                let realm = try Realm()
-                try realm.write {
-                    realm.delete(realm.objects(Object.self))
+                try self.realm.write {
+                    self.realm.delete(self.realm.objects(Object.self))
                     
                     DispatchQueue.main.async {
                         self.model = nil

@@ -17,6 +17,15 @@
         "revision" : "fd199ce07edb4db69e862f74151b95602aad3b43",
         "version" : "10.44.0"
       }
+    },
+    {
+      "identity" : "bottomsheet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/joomcode/BottomSheet",
+      "state" : {
+        "revision" : "15ab2cf96b757b72b09a6515f667685ff55924e1",
+        "version" : "2.0.5"
+      }
     }
   ],
   "version" : 2
