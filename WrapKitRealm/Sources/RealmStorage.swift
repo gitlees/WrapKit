@@ -34,32 +34,9 @@ public class RealmStorage<Object: RealmSwift.Object & ViewModelDTO, Model: Objec
     }
     
     public init(schemaVersion: UInt64) {
-        let config = Realm.Configuration(
-            schemaVersion: schemaVersion,
-            migrationBlock: { migration, oldSchemaVersion in
-                if oldSchemaVersion < schemaVersion {
-                    let realmURL = Realm.Configuration.defaultConfiguration.fileURL!
-                    let realmURLs = [
-                        realmURL,
-                        realmURL.appendingPathExtension("lock"),
-                        realmURL.appendingPathExtension("note"),
-                        realmURL.appendingPathExtension("management")
-                    ]
-                    
-                    for url in realmURLs {
-                        do {
-                            try FileManager.default.removeItem(at: url)
-                        } catch {
-                            print("Error deleting Realm file at \(url): \(error)")
-                        }
-                    }
-                }
-            })
-
-        // Tell Realm to use this new configuration object for the default Realm
+        let config = Realm.Configuration(schemaVersion: schemaVersion, deleteRealmIfMigrationNeeded: true)
         Realm.Configuration.defaultConfiguration = config
         
-        // Now that we’ve told Realm how to handle the schema change, opening the file will automatically perform the migration
         realmQueue.async {
             do {
                 let realm = try Realm()
