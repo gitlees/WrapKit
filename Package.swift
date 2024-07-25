@@ -20,13 +20,15 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.44.0"),
-        .package(url: "https://github.com/joomcode/BottomSheet", from: "2.0.0")
+        .package(url: "https://github.com/joomcode/BottomSheet", from: "2.0.0"),
+        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.12.0")
     ],
     targets: [
         .target(
             name: "WrapKit",
             dependencies: [
-                .product(name: "BottomSheet", package: "BottomSheet", condition: .when(platforms: [.iOS]))
+                .product(name: "BottomSheet", package: "BottomSheet", condition: .when(platforms: [.iOS])),
+                .product(name: "Kingfisher", package: "Kingfisher", condition: .when(platforms: [.iOS]))
             ],
             path: "WrapKitCore/Sources"
         ),
@@ -41,7 +43,11 @@ let package = Package(
         ),
         .testTarget(
             name: "WrapKitTests",
-            dependencies: ["WrapKit", .product(name: "BottomSheet", package: "BottomSheet", condition: .when(platforms: [.iOS]))],
+            dependencies: [
+                "WrapKit",
+                .product(name: "BottomSheet", package: "BottomSheet", condition: .when(platforms: [.iOS])),
+                .product(name: "Kingfisher", package: "Kingfisher", condition: .when(platforms: [.iOS]))
+            ],
             path: "WrapKitCore/Tests"
         ),
     ]

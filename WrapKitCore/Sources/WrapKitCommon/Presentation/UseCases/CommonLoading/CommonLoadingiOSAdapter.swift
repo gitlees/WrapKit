@@ -23,7 +23,10 @@ public extension CommonLoadingOutput where Self == CommonLoadingiOSAdapter {
                 color: loadingViewColor
             ),
             backgroundColor: wrapperViewColor,
-            padding: .init(top: 25, left: 25, bottom: 25, right: 25)
+            padding: .init(top: 25, left: 25, bottom: 25, right: 25),
+            contentViewConstraints: { contentView, wrapperView in
+                contentView.fillSuperview()
+            }
         )
         loadingView.cornerRadius = 12
         loadingView.contentView.startAnimating()
@@ -36,15 +39,16 @@ public extension CommonLoadingOutput where Self == CommonLoadingiOSAdapter {
 }
 
 public class CommonLoadingiOSAdapter: CommonLoadingOutput {
-    public var isLoading: Bool = false {
-        didSet {
-            isLoading ? onView.showLoadingView(
-                loadingView,
-                backgroundColor: backgroundColor,
-                size: size
-            ) : onView.hideLoadingView()
-        }
+    public func display(isLoading: Bool) {
+        self.isLoading = isLoading
+        isLoading ? onView.showLoadingView(
+            loadingView,
+            backgroundColor: backgroundColor,
+            size: size
+        ) : onView.hideLoadingView()
     }
+    
+    public private(set) var isLoading: Bool = false
     
     private let onView: UIView
     private let loadingView: UIView

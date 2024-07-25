@@ -1,6 +1,24 @@
 {
   "pins" : [
     {
+      "identity" : "bottomsheet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/joomcode/BottomSheet",
+      "state" : {
+        "revision" : "15ab2cf96b757b72b09a6515f667685ff55924e1",
+        "version" : "2.0.5"
+      }
+    },
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher.git",
+      "state" : {
+        "revision" : "2ef543ee21d63734e1c004ad6c870255e8716c50",
+        "version" : "7.12.0"
+      }
+    },
+    {
       "identity" : "realm-core",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core.git",
@@ -16,15 +34,6 @@
       "state" : {
         "revision" : "fd199ce07edb4db69e862f74151b95602aad3b43",
         "version" : "10.44.0"
-      }
-    },
-    {
-      "identity" : "bottomsheet",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/joomcode/BottomSheet",
-      "state" : {
-        "revision" : "15ab2cf96b757b72b09a6515f667685ff55924e1",
-        "version" : "2.0.5"
       }
     }
   ],

@@ -124,10 +124,15 @@ private extension SelectionContentView {
                 appearance: config.searchBar.textfieldAppearence
             )
         )
-        searchBar.textfield.leadingView = WrapperView(contentView: ImageView(
-            image: config.searchBar.searchImage,
-            tintColor: config.searchBar.tintColor
-        ))
+        searchBar.textfield.leadingView = WrapperView(
+            contentView: ImageView(
+                image: config.searchBar.searchImage,
+                tintColor: config.searchBar.tintColor
+            ),
+            contentViewConstraints: { contentView, wrapperView in
+                contentView.fillSuperview()
+            }
+        )
         return searchBar
     }
 }
