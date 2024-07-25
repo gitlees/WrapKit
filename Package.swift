@@ -14,6 +14,10 @@ let package = Package(
             type: .static,
             targets: ["WrapKitRealm"]),
         .library(
+            name: "WrapKitRealmDynamic",
+            type: .dynamic,
+            targets: ["WrapKitRealm"]),
+        .library(
             name: "WrapKitDynamic",
             type: .dynamic,
             targets: ["WrapKit"])
